@@ -1,0 +1,9 @@
+package: github.com/k8s-study/endpoint-service
+import:
+- package: github.com/labstack/echo
+  version: ^3.3.5
+- package: github.com/swaggo/swag
+  version: ^1.1.1
+- package: github.com/jinzhu/gorm
+  version: ^1.9.1
+- package: github.com/swaggo/echo-swagger
