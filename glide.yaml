@@ -7,3 +7,7 @@ import:
 - package: github.com/jinzhu/gorm
   version: ^1.9.1
 - package: github.com/swaggo/echo-swagger
+- package: github.com/go-xorm/xorm
+  version: ^0.6.6
+- package: github.com/go-xorm/builder
+  version: ^0.1.0

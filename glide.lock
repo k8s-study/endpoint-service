@@ -1,5 +1,5 @@
-hash: dbb7a0c34575580f934095dd23d2f86b7fb7926f18cb65ffae2b4bfb72289a3d
-updated: 2018-04-15T15:04:55.788612+09:00
+hash: 96011b6cc05c15c1fa2447682f23fd289a1cf5251eeb606c0c867fb8205456bf
+updated: 2018-04-16T17:20:43.380349+09:00
 imports:
 - name: github.com/dgrijalva/jwt-go
   version: 06ea1031745cb8b3dab3f6a236daf2b0aa468b7e
@@ -11,6 +11,12 @@ imports:
   version: 370d9e047557906322be8396e77cb0376be6cb96
 - name: github.com/go-openapi/swag
   version: 811b1089cde9dad18d4d0c2d09fbdbf28dbd27a5
+- name: github.com/go-xorm/builder
+  version: a9b7ffcca3f0c6445c4e3b1bf72c01578817a6c3
+- name: github.com/go-xorm/core
+  version: f43c33d9a48db006417a7ac4c16b08897e3e1458
+- name: github.com/go-xorm/xorm
+  version: fc1b13e0d8e240788213230aa5747eb557f80f41
 - name: github.com/jinzhu/gorm
   version: 6ed508ec6a4ecb3531899a69cbc746ccf65a4166
   subpackages:
@@ -59,6 +65,8 @@ imports:
   subpackages:
   - acme
   - acme/autocert
+  - bcrypt
+  - blowfish
 - name: golang.org/x/net
   version: 61147c48b25b599e5b561d2e9c4f3e1ef489ca41
   subpackages:
