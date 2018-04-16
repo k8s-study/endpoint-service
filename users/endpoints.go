@@ -7,7 +7,7 @@ import (
 	"github.com/k8s-study/endpoint-service/database"
 	"log"
 	"time"
-	"fmt"
+	"strconv"
 )
 
 type EndpointInput struct {
@@ -43,19 +43,22 @@ func (d *EndpointInput) ToModel() (*database.Endpoint, error) {
 type SearchInput struct {
 	SkipCount      int `query:"skipCount"`
 	MaxResultCount int `query:"maxResultCount"`
+	UserId		   string
 }
 
 func GetUsersEndpointsList(c echo.Context) error {
 
 	var v SearchInput
 	if err := c.Bind(&v); err != nil {
-
+		log.Fatalln(err)
 	}
 	if v.MaxResultCount == 0 {
 		v.MaxResultCount = 15
 	}
 
-	totalCount, items, err := database.Endpoint{}.GetAll(c.Request().Context(), v.SkipCount, v.MaxResultCount)
+	v.UserId = "aaaaa-bbbbb-ccccc"
+
+	totalCount, items, err := database.Endpoint{}.GetUsersAll(c.Request().Context(), v.UserId, v.SkipCount, v.MaxResultCount)
 	if err != nil {
 		return err
 	}
@@ -74,36 +77,76 @@ func GetUsersOneEndpoint(c echo.Context) error {
 
 func CreateUsersEndpoints(c echo.Context) error {
 
-	var v EndpointInput
+	var input EndpointInput
 
-	if err := c.Bind(&v); err != nil {
-		return c.Redirect(http.StatusFound, "/111")
+	if err := c.Bind(&input); err != nil {
+		return c.Redirect(http.StatusFound, "/")
 	}
 
-	endpoint, err := v.ToModel()
+	endpoint, err := input.ToModel()
 	if err != nil {
-		log.Fatalln(err)
-		return c.Redirect(http.StatusFound, "/3333")
+		return c.Redirect(http.StatusFound, "/")
 	}
 
 	endpoint.UserId = "aaaaa-bbbbb-ccccc"
 
-	ep, err := endpoint.Create(c.Request().Context())
+	_, err = endpoint.Create(c.Request().Context())
 	if err != nil {
 		return err
 	}
 
-	log.Println(ep)
-
-	//return c.JSON(http.StatusOK, ep)
-
-	return c.Redirect(http.StatusFound, fmt.Sprintf("/endpoints/%d", endpoint.ID))
+	return c.JSON(http.StatusOK, endpoint)
 }
 
 func UpdateUsersEndpoints(c echo.Context) error {
-	return c.String(http.StatusOK, "update User endpoint")
+
+	var input EndpointInput
+
+	if err := c.Bind(&input); err != nil {
+		return c.Redirect(http.StatusFound, "/111")
+	}
+
+	endpoint, err := input.ToModel()
+	if err != nil {
+		return c.Redirect(http.StatusFound, "/333")
+	}
+
+	id, err := strconv.ParseInt(c.Param("endpointId"), 10, 64)
+
+	if err != nil {
+		return c.JSON(http.StatusNotFound, input)
+	}
+
+	endpoint.UserId = "aaaaa-bbbbb-ccccc"
+
+	endpoint.ID = id
+	if err := endpoint.Update(c.Request().Context()); err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, endpoint)
+
 }
 
 func DeleteUsersEndpoints(c echo.Context) error {
-	return c.String(http.StatusOK, "delete user endpoint")
+
+	id, err := strconv.ParseInt(c.Param("endpointId"), 10, 64)
+
+	if err != nil {
+		return c.JSON(http.StatusNotFound, "NOT found endpoint")
+	}
+
+	endpoint := &database.Endpoint{
+		ID : id,
+		UserId : "aaaaa-bbbbb-ccccc",
+	}
+
+
+	if err := endpoint.Delete(c.Request().Context()); err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, endpoint)
+
+	//return c.String(http.StatusOK, "delete user endpoint")
 }
