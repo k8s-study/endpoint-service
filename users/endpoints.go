@@ -146,7 +146,5 @@ func DeleteUsersEndpoints(c echo.Context) error {
 		return err
 	}
 
-	return c.JSON(http.StatusOK, endpoint)
-
-	//return c.String(http.StatusOK, "delete user endpoint")
+	return c.JSON(http.StatusOK, "endpoint deleted")
 }
