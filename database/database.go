@@ -5,8 +5,7 @@ import (
 
 	"github.com/go-xorm/xorm"
 	"github.com/labstack/echo"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
-	// _ “github.com/go-sql-driver/mysql”
+	_ "github.com/go-sql-driver/mysql"
 )
 
 var ContextDBName = "DB"

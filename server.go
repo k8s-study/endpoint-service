@@ -2,19 +2,23 @@ package main
 
 import (
 
+	"log"
 	"net/http"
+	"fmt"
+	"os"
 
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
-
 	"github.com/go-xorm/xorm"
+	_ "github.com/go-sql-driver/mysql"
 
+	"github.com/swaggo/echo-swagger"
 	_ "github.com/k8s-study/endpoint-service/docs"
+
 	"github.com/k8s-study/endpoint-service/database"
 	"github.com/k8s-study/endpoint-service/endpoints"
 	"github.com/k8s-study/endpoint-service/users"
 
-	"github.com/swaggo/echo-swagger"
 
 )
 
@@ -24,12 +28,22 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	db, err := xorm.NewEngine("sqlite3", "./gorm.db")
+	connection := fmt.Sprintf(
+		"%s:%s@tcp(%s:%s)/%s?charset=utf8",
+		os.Getenv("DB_USERNAME"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_PORT"),
+		os.Getenv("DB_NAME"))
+
+	driver := "mysql"
+
+	db, err := xorm.NewEngine(driver, connection)
 
 	err = db.Sync(new(database.Endpoint))
 
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 
 	defer db.Close()

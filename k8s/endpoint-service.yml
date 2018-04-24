@@ -1,0 +1,82 @@
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: endpoint-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      type: db
+      service: endpoint
+  template:
+    metadata:
+      labels:
+        type: db
+        service: endpoint
+    spec:
+      containers:
+      - name: db
+        image: mysql:5.7
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            value: endpoint
+        ports:
+          - name: endpoint-database
+            containerPort: 3306
+            protocol: TCP
+        volumeMounts:
+          - name: mysql-initdb
+            mountPath: /docker-entrypoint-initdb.d
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-initdb-config
+data:
+  initdb.sql: |
+    CREATE DATABASE endpoint;
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: endpoint-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      type: api
+      service: endpoint
+  template:
+    metadata:
+      labels:
+        type: api
+        service: endpoint
+    spec:
+      containers:
+        - name: endpoint
+          image: findstar/k8s-study-endpoint-service:0.3
+          env:
+          - name: PORT
+            value: "1323"
+          - name: DB_HOST
+            value: localhost
+          - name: DB_PORT
+            value: "3306"
+          - name: DB_USERNAME
+            value: root
+          - name: DB_PASSWORD
+            value: endpoint
+          - name: KONG_HOST
+            value: "http://apigw-admin.pong.com"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 1323
+            periodSeconds: 1
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 1323
+            initialDelaySeconds: 10
